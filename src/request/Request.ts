@@ -1,12 +1,14 @@
+export type RequestError<T = {}> = {
+    code: number;
+    body: any;
+} & T;
+
 interface RequestDefinition {
     body?: any;
     url?: any;
     headers?: any;
     result: any;
-    error: {
-        code: number;
-        body: any;
-    };
+    error: RequestError<any>
 }
 
 type ExcludeKeys<T, U> = T extends U ? never : T;
@@ -50,9 +52,7 @@ export default class Request<T extends Partial<RequestDefinition>> {
             for (const key in params.headers)
                 headers.set(key, params.headers[key])
         
-        return new Promise((resolve, reject) => {
-            console.log('body', this.method !== 'get' ? params.body : undefined);
-            
+        return new Promise((resolve, reject) => {            
             fetch(url, {
                 method: this.method,
                 body: this.method !== 'get' ? JSON.stringify(params.body) : undefined,

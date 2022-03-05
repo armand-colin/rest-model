@@ -44,7 +44,7 @@ export default class EntityManager<T extends Entity> {
         return observable
     }
 
-    protected update(...entities: T[]) {
+    protected updateEntities(...entities: T[]) {
         if (entities.length === 0)
             return;
 
@@ -66,8 +66,9 @@ export default class EntityManager<T extends Entity> {
             this.emit('updated', entities)
     }
 
-    protected delete(...ids: string[]) {
+    protected deleteEntities(...ids: string[]) {        
         const deleted = []
+        
         for (const id of ids) {
             if (this._entities.has(id)) {
                 this._entities.delete(id)
@@ -75,8 +76,10 @@ export default class EntityManager<T extends Entity> {
             }
         }
 
-        if (deleted)
+        if (deleted.length) {
             this._proxy.set([...this._entities.values()])
+            this.emit('deleted', deleted)
+        }
     }
 
     public view(query: ViewQuery<T>): Observable<T[]> {
